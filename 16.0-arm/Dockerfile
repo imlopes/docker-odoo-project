@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM python:3.10-bullseye 
 MAINTAINER Camptocamp
 ARG UID=999
 # create the working directory and a place to set the logs (if wanted)
@@ -16,13 +16,11 @@ ENV LANG=C.UTF-8 \
 ENV BUILD_PACKAGE \
     build-essential \
     gcc \
-    python3.7-dev \
     libevent-dev \
     libfreetype6-dev \
     libxml2-dev \
     libxslt1-dev \
     libsasl2-dev \
-    libffi-dev \
     libldap2-dev \
     libssl-dev \
     libjpeg-dev \
@@ -31,8 +29,9 @@ ENV BUILD_PACKAGE \
     git
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
+# wkhtml-buster is kept as in official image, no deb available for bullseye
 RUN set -x; \
-        sh -c /install/package_odoo_13.0_14.0.sh \
+        sh -c /install/package_odoo-bullseye.sh \
         && /install/setup-pip.sh \
         && /install/postgres.sh \
         && /install/kwkhtml_client.sh \
@@ -44,6 +43,8 @@ RUN set -x; \
 
 # grab dockerize to generate template and
 # wait on postgres
+RUN /install/dockerize.sh
+
 RUN /install/dockerize.sh
 
 COPY ./src_requirements.txt /odoo
@@ -64,7 +65,7 @@ USER odoo
 # Expose Odoo services
 EXPOSE 8069 8072
 
-ENV ODOO_VERSION=14.0 \
+ENV ODOO_VERSION=16.0 \
     PATH=/odoo/odoo-bin:/odoo/.local/bin:$PATH \
     LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \

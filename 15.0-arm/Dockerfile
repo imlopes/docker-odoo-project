@@ -1,6 +1,6 @@
-FROM debian:buster
+FROM arm64v8/debian:bullseye
 MAINTAINER Camptocamp
-ARG UID=999
+
 # create the working directory and a place to set the logs (if wanted)
 RUN mkdir -p /odoo /var/log/odoo
 
@@ -12,11 +12,12 @@ COPY ./install /install
 ENV LANG=C.UTF-8 \
     LC_ALL=C.UTF-8
 
+
 # build and dev packages
 ENV BUILD_PACKAGE \
     build-essential \
     gcc \
-    python3.7-dev \
+    python3.9-dev \
     libevent-dev \
     libfreetype6-dev \
     libxml2-dev \
@@ -31,41 +32,42 @@ ENV BUILD_PACKAGE \
     git
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
+# wkhtml-buster is kept as in official image, no deb available for bullseye
 RUN set -x; \
-        sh -c /install/package_odoo_13.0_14.0.sh \
-        && /install/setup-pip.sh \
-        && /install/postgres.sh \
-        && /install/kwkhtml_client.sh \
-        && /install/kwkhtml_client_force_python3.sh \
-        && /install/dev_package.sh \
-        && python3 -m pip install --force-reinstall pip "setuptools<58" \
-        && pip install -r /odoo/base_requirements.txt --ignore-installed \
-        && /install/purge_dev_package_and_cache.sh
+        sh -c /install/package_odoo-bullseye.sh
+RUN set -x; \
+        sh -c /install/setup-pip.sh
+RUN set -x; \
+        sh -c /install/postgres.sh
+RUN set -x; \
+        sh -c /install/kwkhtml_client.sh
+RUN set -x; \
+        sh -c /install/kwkhtml_client_force_python3.sh
+RUN set -x; \
+        sh -c /install/dev_package.sh
+RUN set -x; \
+        sh -c pip install -r /odoo/base_requirements.txt --ignore-installed
+RUN set -x; \
+        sh -c /install/purge_dev_package_and_cache.sh
 
-# grab dockerize to generate template and
+# grab gosu for easy step-down from root and dockerize to generate template and
 # wait on postgres
-RUN /install/dockerize.sh
+RUN /install/gosu.sh && /install/dockerize.sh
 
 COPY ./src_requirements.txt /odoo
-COPY ./bin /odoo/odoo-bin
+COPY ./bin /odoo-bin
 COPY ./templates /templates
-COPY ./before-migrate-entrypoint.d /odoo/before-migrate-entrypoint.d
-COPY ./start-entrypoint.d /odoo/start-entrypoint.d
+COPY ./before-migrate-entrypoint.d /before-migrate-entrypoint.d
+COPY ./start-entrypoint.d /start-entrypoint.d
 COPY ./MANIFEST.in /odoo
-RUN adduser --disabled-password -u $UID --gecos '' odoo
-RUN touch /odoo/odoo.cfg
-RUN mkdir -p /odoo/data/odoo/{addons,filestore,sessions} 
-RUN chown -R odoo:odoo /odoo
-RUN usermod odoo --home /odoo
-RUN chown -R odoo:odoo /var/log/odoo
 
 VOLUME ["/data/odoo", "/var/log/odoo"]
-USER odoo
+
 # Expose Odoo services
 EXPOSE 8069 8072
 
-ENV ODOO_VERSION=14.0 \
-    PATH=/odoo/odoo-bin:/odoo/.local/bin:$PATH \
+ENV ODOO_VERSION=15.0 \
+    PATH=/odoo-bin:$PATH \
     LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \
     DB_HOST=db \
@@ -79,7 +81,7 @@ ENV ODOO_VERSION=14.0 \
     ODOO_DATA_PATH=/odoo/data \
     DEMO=False \
     ADDONS_PATH=/odoo/local-src,/odoo/src/addons \
-    OPENERP_SERVER=/odoo/odoo.cfg
+    OPENERP_SERVER=/etc/odoo.cfg
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["odoo"]
