@@ -15,11 +15,7 @@ apt-get install -y --no-install-recommends \
     node-clean-css \
     node-less \
     poppler-utils \
-    python3 \
-    python3-pip \
-    python3-setuptools \
-    python3-renderpm \
-    python3-wheel \
+    libffi-dev \
     libxslt1.1 \
     xfonts-75dpi \
     xfonts-base \

@@ -16,34 +16,44 @@ ENV LANG=C.UTF-8 \
 ENV BUILD_PACKAGE \
     build-essential \
     gcc \
+    curl \
     libevent-dev \
     libfreetype6-dev \
     libxml2-dev \
     libxslt1-dev \
     libsasl2-dev \
+    libffi-dev \
     libldap2-dev \
     libssl-dev \
     libjpeg-dev \
     libpng-dev \
     zlib1g-dev \
-    git
+    git \
+    curl ca-certificates gnupg
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
 # wkhtml-buster is kept as in official image, no deb available for bullseye
 RUN set -x; \
         sh -c /install/package_odoo-bullseye.sh \
-        && /install/setup-pip.sh \
-        && /install/postgres.sh \
-        && /install/kwkhtml_client.sh \
-        && /install/kwkhtml_client_force_python3.sh \
-        && /install/dev_package.sh \
-        && python3 -m pip install --force-reinstall pip "setuptools<58" \
-        && pip install -r /odoo/base_requirements.txt --ignore-installed \
-        && /install/purge_dev_package_and_cache.sh
+RUN set -x; \
+        sh -c /install/setup-pip.sh
+RUN set -x; \
+        sh -c /install/postgres.sh
+RUN set -x; \
+        sh -c /install/kwkhtml_client.sh
+RUN set -x; \
+        sh -c /install/kwkhtml_client_force_python3.sh
+RUN set -x; \
+        sh -c /install/dev_package.sh
+#        && python3 -m pip install --force-reinstall pip "setuptools<58" \
+RUN set -x; \
+        pip install -r /odoo/base_requirements.txt --ignore-installed
+RUN set -x; \
+        sh -c /install/purge_dev_package_and_cache.sh
 
 # grab dockerize to generate template and
 # wait on postgres
-RUN /install/dockerize.sh
+RUN apt update && apt install curl && sh -c /install/dockerize.sh
 
 RUN /install/dockerize.sh
 
