@@ -2,6 +2,7 @@
 set -eo pipefail
 
 arch=`uname -m`
+echo "DOCKERIZE Running on $arch"
 if [[ arch -eq 'aarch64' ]]; then
   arch="arm64"
   hash="541ee4713933e087d766e2954b37cc652dff73b569d26b0c589277dcf8b16a9a"
