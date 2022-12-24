@@ -73,6 +73,8 @@ esac
 # Create configuration file from the template
 TEMPLATES_DIR=/templates
 CONFIG_TARGET=/odoo/odoo.cfg
+arch=`uname -m`
+echo "DOCKERIZE Running on $arch"
 if [ -e $TEMPLATES_DIR/openerp.cfg.tmpl ]; then
   dockerize -template $TEMPLATES_DIR/openerp.cfg.tmpl:$CONFIG_TARGET
 fi
