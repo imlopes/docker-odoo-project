@@ -2,6 +2,9 @@
 set -eo pipefail
 
 arch=`uname -m`
+
+apt-get install -y build-essential gcc
+
 echo "DOCKERIZE Running on $arch"
 if [[ arch -eq 'aarch64' ]] || [[ arch -eq 'arm64' ]]; then
   echo "DOCKERIZE Running on arm64"
