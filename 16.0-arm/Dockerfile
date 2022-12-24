@@ -55,7 +55,7 @@ RUN set -x; \
 # wait on postgres
 RUN apt update && apt install curl && sh -c /install/dockerize.sh
 
-RUN /install/dockerize.sh
+# RUN /install/dockerize.sh
 
 COPY ./src_requirements.txt /odoo
 COPY ./bin /odoo/odoo-bin
