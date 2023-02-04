@@ -29,7 +29,8 @@ ENV BUILD_PACKAGE \
     libpng-dev \
     zlib1g-dev \
     git \
-    curl ca-certificates gnupg
+    ca-certificates \
+    gnupg
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
 # wkhtml-buster is kept as in official image, no deb available for bullseye

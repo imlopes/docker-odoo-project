@@ -16,13 +16,8 @@ else
   hash="9baf0af30e0ec0b47a0a34e0a2b2a0e5de1872d2f9e846829692b3457407cb29"
 fi
 
-echo "DOCKERIZE Running on x86_64"
-arch="x86_64"
-hash="9baf0af30e0ec0b47a0a34e0a2b2a0e5de1872d2f9e846829692b3457407cb29"
-
 curl -o dockerize-linux-${arch} https://github.com/powerman/dockerize/releases/download/v0.17.0/dockerize-linux-${arch} -SL
 echo "${hash}  dockerize-linux-${arch}" | sha256sum -c -
 install dockerize-linux-${arch} /usr/local/bin/dockerize && rm dockerize-linux-${arch}
 chmod +x /usr/local/bin/dockerize
 
-# TODO update version and repo
