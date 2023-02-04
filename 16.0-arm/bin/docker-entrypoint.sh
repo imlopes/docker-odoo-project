@@ -75,11 +75,9 @@ TEMPLATES_DIR=/templates
 CONFIG_TARGET=/odoo/odoo.cfg
 if [ -e $TEMPLATES_DIR/openerp.cfg.tmpl ]; then
   dockerize -template $TEMPLATES_DIR/openerp.cfg.tmpl:$CONFIG_TARGET
-  cat $CONFIG_TARGET
 fi
 if [ -e $TEMPLATES_DIR/odoo.cfg.tmpl ]; then
   dockerize -template $TEMPLATES_DIR/odoo.cfg.tmpl:$CONFIG_TARGET
-  cat $CONFIG_TARGET
 fi
 
 if [ ! -f "${CONFIG_TARGET}" ]; then
