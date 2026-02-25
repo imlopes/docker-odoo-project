@@ -8,7 +8,7 @@ ARG GID=999
 RUN groupadd -g $GID odoo \
     && adduser --disabled-password --no-create-home --gecos '' \
                --home /odoo --uid $UID --gid $GID odoo \
-    && install -m 770 -o odoo -d /var/log/odoo \
+    && install -m 770 -o odoo -d /templates /var/log/odoo \
                                  /odoo /odoo/.venv /odoo/src \
                                  /odoo/data \
                                  /odoo/data/odoo \
@@ -65,15 +65,14 @@ RUN /install/package_odoo.sh \
     && /odoo/.venv/bin/pip install -r /odoo/base_requirements.txt \
     && /odoo/.venv/bin/pip install -r /odoo/extra_requirements.txt" \
     && chgrp -R root /odoo/.venv \
-    # Grab dockerize to generate template and wait on postgres \
+    # Grab dockerize to generate template and wait on postgres
     && /install/dockerize.sh \
-    # Purge build packages, to reduce layer size \
+    # Purge build packages, to reduce layer size
     && /install/purge_dev_package_and_cache.sh
 
 COPY --chown=odoo:root --chmod=660 ./src_requirements.txt /odoo
 COPY --chown=odoo:root --chmod=770 ./bin /odoo/odoo-bin
 COPY --chown=odoo:root --chmod=660 ./templates /templates
-RUN chmod 770 /templates
 COPY --chown=odoo:root --chmod=770 ./before-migrate-entrypoint.d /odoo/before-migrate-entrypoint.d
 COPY --chown=odoo:root --chmod=770 ./start-entrypoint.d /odoo/start-entrypoint.d
 COPY --chown=odoo:root --chmod=660 ./MANIFEST.in /odoo
